@@ -43,7 +43,7 @@ function createBoard() {
         }
     }
 }
-
+ 
 // Handle clicks
 function handleClick(e) {
     const square = e.currentTarget; // FIX: always get square
@@ -56,6 +56,7 @@ function handleClick(e) {
     if (selectedSquare) {
         if (isValidMove(selectedSquare.row, selectedSquare.col, row, col)) {
             movePiece(selectedSquare.row, selectedSquare.col, row, col);
+            getAIMove(boardState);
             currentTurn = currentTurn === "white" ? "black" : "white";
         }
         selectedSquare = null;
@@ -123,6 +124,19 @@ function highlightSquare(row, col) {
     const index = row * 8 + col;
     document.getElementsByClassName("square")[index]
         .classList.add("highlight");
+}
+
+async function getAIMove(boardState) {
+    const response = await fetch("http://localhost:5000/move", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ board: boardState })
+    });
+
+    const data = await response.json();
+    console.log("AI Move:", data);
 }
 
 // Start
