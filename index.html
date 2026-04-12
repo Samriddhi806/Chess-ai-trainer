@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Chess Trainer - Learn chess by playing against an intelligent bot that teaches you the rules">
+    <title>Chess Mentor — AI Chess Trainer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header id="main-header">
+            <div class="header-content">
+                <div class="logo-group">
+                    <div class="logo-icon">♚</div>
+                    <div>
+                        <h1>Chess Mentor</h1>
+                        <p class="tagline">Learn chess rules by playing</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button id="btn-new-game" class="btn btn-primary" title="Start a new game">
+                        <span class="btn-icon">↻</span> New Game
+                    </button>
+                    <button id="btn-draw" class="btn btn-ghost" title="Offer a draw">
+                        <span class="btn-icon">½</span> Draw
+                    </button>
+                    <button id="btn-resign" class="btn btn-danger" title="Resign the game">
+                        <span class="btn-icon">⚑</span> Resign
+                    </button>
+                    <button id="btn-flip-board" class="btn btn-ghost" title="Flip board orientation">
+                        <span class="btn-icon">⇅</span> Flip
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Left Panel: Game Info -->
+            <aside id="left-panel">
+                <!-- Player Cards -->
+                <div id="opponent-card" class="player-card">
+                    <div class="player-avatar black-avatar">♚</div>
+                    <div class="player-info">
+                        <span class="player-name">Chess Mentor AI</span>
+                        <span class="player-role">Opponent</span>
+                    </div>
+                    <div class="turn-indicator" id="ai-turn-indicator"></div>
+                </div>
+
+                <!-- Captured Pieces -->
+                <div class="captured-section">
+                    <div id="captured-by-white" class="captured-pieces">
+                        <span class="captured-label">Captured by you</span>
+                        <div class="captured-list" id="white-captures"></div>
+                    </div>
+                    <div id="captured-by-black" class="captured-pieces">
+                        <span class="captured-label">Captured by AI</span>
+                        <div class="captured-list" id="black-captures"></div>
+                    </div>
+                </div>
+
+                <div id="player-card" class="player-card">
+                    <div class="player-avatar white-avatar">♔</div>
+                    <div class="player-info">
+                        <span class="player-name">You</span>
+                        <span class="player-role">White pieces</span>
+                    </div>
+                    <div class="turn-indicator active" id="player-turn-indicator"></div>
+                </div>
+            </aside>
+
+            <!-- Center: Chessboard -->
+            <section id="board-section">
+                <div id="board-container">
+                    <div class="rank-labels" id="rank-labels"></div>
+                    <div id="chessboard"></div>
+                    <div class="file-labels" id="file-labels"></div>
+                </div>
+                <!-- Status Bar -->
+                <div id="status-bar">
+                    <div id="game-status" class="status-text">Your turn — White to move</div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Move History & Feedback -->
+            <aside id="right-panel">
+                <!-- Tabs -->
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-tab="moves" id="tab-moves">Moves</button>
+                    <button class="tab-btn" data-tab="feedback" id="tab-feedback">
+                        Feedback
+                        <span class="badge" id="mistake-badge" style="display:none;">0</span>
+                    </button>
+                </div>
+
+                <!-- Moves Tab -->
+                <div class="tab-content active" id="tab-content-moves">
+                    <div id="move-list" class="move-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">♟</div>
+                            <p>No moves yet. Make your first move!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Tab -->
+                <div class="tab-content" id="tab-content-feedback">
+                    <div id="feedback-list" class="feedback-list">
+                        <div class="empty-state">
+                            <div class="empty-icon">✓</div>
+                            <p>No mistakes yet. Keep it up!</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Mistake Notification Toast -->
+        <div id="mistake-toast" class="toast hidden">
+            <div class="toast-header">
+                <span class="toast-icon">⚠</span>
+                <span class="toast-title">Illegal Move!</span>
+                <button class="toast-close" id="toast-close">✕</button>
+            </div>
+            <div class="toast-body" id="toast-message">
+                <!-- Dynamic message -->
+            </div>
+            <div class="toast-footer">
+                <span class="toast-hint">Move has been undone. Try again!</span>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal (Resign / Draw) -->
+        <div id="confirm-overlay" class="modal-overlay hidden">
+            <div class="modal confirm-modal" id="confirm-modal">
+                <div class="modal-glow"></div>
+                <div class="modal-header">
+                    <div class="modal-icon" id="confirm-icon">⚑</div>
+                    <h2 id="confirm-title">Resign?</h2>
+                    <p id="confirm-subtitle" class="modal-subtitle">Are you sure you want to resign this game?</p>
+                </div>
+                <div class="modal-footer confirm-footer">
+                    <button id="btn-confirm-cancel" class="btn btn-ghost btn-lg">Cancel</button>
+                    <button id="btn-confirm-yes" class="btn btn-danger btn-lg">
+                        <span class="btn-icon">✓</span> Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-overlay" class="modal-overlay hidden">
+            <div class="modal" id="game-over-modal">
+                <div class="modal-glow"></div>
+                <div class="modal-header">
+                    <div class="modal-icon" id="modal-result-icon">♔</div>
+                    <h2 id="modal-result-title">Game Over</h2>
+                    <p id="modal-result-subtitle" class="modal-subtitle">Great game!</p>
+                </div>
+                <div class="modal-body">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-total-moves">0</span>
+                            <span class="stat-label">Total Moves</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-mistakes">0</span>
+                            <span class="stat-label">Illegal Attempts</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="stat-captures">0</span>
+                            <span class="stat-label">Captures</span>
+                        </div>
+                    </div>
+
+                    <!-- Mistake Summary -->
+                    <div id="mistake-summary-section" class="mistake-summary" style="display:none;">
+                        <h3>Mistake Summary</h3>
+                        <div id="mistake-summary-list" class="mistake-summary-list"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-play-again" class="btn btn-primary btn-lg">
+                        <span class="btn-icon">↻</span> Play Again
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Promotion Modal -->
+        <div id="promotion-overlay" class="modal-overlay hidden">
+            <div class="modal promotion-modal" id="promotion-modal">
+                <h3>Choose Promotion Piece</h3>
+                <div class="promotion-choices" id="promotion-choices">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="chess-engine.js"></script>
+    <script src="chess-ai.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
